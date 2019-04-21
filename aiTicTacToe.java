@@ -8,6 +8,29 @@ public class aiTicTacToe {
 		int index = position.x*16+position.y*4+position.z;
 		return board.get(index).state;
 	}
+	
+	public alphabeta(node, depth, α, β, maximizingPlayer)
+	{
+		if depth = 0 or node is a terminal node:
+			return the heuristic value of node
+		if maximizingPlayer:
+			value := −∞
+			for each child of node do
+				value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
+				α := max(α, value)
+				if α ≥ β then
+					break (* β cut-off *)
+			return value
+		else
+			value := +∞
+			for each child of node do
+				value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
+				β := min(β, value)
+				if α ≥ β then
+					break (* α cut-off *)
+			return value
+	}
+
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
