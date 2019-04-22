@@ -1,5 +1,4 @@
 import java.util.*;
-<<<<<<< HEAD
 
 public class Tree<T> {
     private Node<T> root;
@@ -17,10 +16,6 @@ public class Tree<T> {
     }
 }
 public class aiTicTacToe {
-=======
-public class aiTicTacToe {
-
->>>>>>> 21df1fb6ff65ad38d7fdc37b9ffee4c6e2390f6a
 	public int player; //1 for player 1 and 2 for player 2
 	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> board)
 	{
@@ -28,54 +23,19 @@ public class aiTicTacToe {
 		int index = position.x*16+position.y*4+position.z;
 		return board.get(index).state;
 	}
-<<<<<<< HEAD
 
 	public getBestMove(){
 		
-=======
-	
-	public alphabeta(node, depth, α, β, maximizingPlayer)
-	{
-		if depth = 0 or node is a terminal node:
-			return the heuristic value of node
-		if maximizingPlayer:
-			value := −∞
-			for each child of node do
-				value := max(value, alphabeta(child, depth − 1, α, β, FALSE))
-				α := max(α, value)
-				if α ≥ β then
-					break (* β cut-off *)
-			return value
-		else
-			value := +∞
-			for each child of node do
-				value := min(value, alphabeta(child, depth − 1, α, β, TRUE))
-				β := min(β, value)
-				if α ≥ β then
-					break (* α cut-off *)
-			return value
->>>>>>> 21df1fb6ff65ad38d7fdc37b9ffee4c6e2390f6a
 	}
 
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
-<<<<<<< HEAD
 
 		do
 			{
 				myNextMove = getBestMove();
-=======
-		
-		do
-			{
-				Random rand = new Random();
-				int x = rand.nextInt(4);
-				int y = rand.nextInt(4);
-				int z = rand.nextInt(4);
-				myNextMove = new positionTicTacToe(x,y,z);
->>>>>>> 21df1fb6ff65ad38d7fdc37b9ffee4c6e2390f6a
 			}while(getStateOfPositionFromBoard(myNextMove,board)!=0);
 		return myNextMove;
 			
