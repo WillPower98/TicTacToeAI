@@ -292,19 +292,19 @@ public class runTicTacToe {
 			System.out.println();
 		}
 	}
-	public boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> tagergetBoard)
+	public boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard)
 	{
 		//make move on Tic-Tac-Toe board, given position and player 
 		//player 1 = 1, player 2 = 2
 		
 		//brute force (obviously not a wise way though)
-		for(int i=0;i<tagergetBoard.size();i++)
+		for(int i=0;i<targetBoard.size();i++)
 		{
-			if(tagergetBoard.get(i).x==position.x && tagergetBoard.get(i).y==position.y && tagergetBoard.get(i).z==position.z) //if this is the position
+			if(targetBoard.get(i).x==position.x && targetBoard.get(i).y==position.y && targetBoard.get(i).z==position.z) //if this is the position
 			{
-				if(tagergetBoard.get(i).state==0)
+				if(targetBoard.get(i).state==0)
 				{
-					tagergetBoard.get(i).state = player;
+					targetBoard.get(i).state = player;
 					return true;
 				}
 				else
@@ -322,7 +322,7 @@ public class runTicTacToe {
 		Random rand = new Random();
 		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
 		
-		while((result = isEnded())<1) //game loop
+		while((result = isEnded())==0) //game loop
 		{
 			if(turn==1)
 			{

@@ -1,21 +1,6 @@
 import java.util.*;
-
-public class Tree<T> {
-    private Node<T> root;
-
-    public Tree(T rootData) {
-        root = new Node<T>();
-        root.data = rootData;
-        root.children = new ArrayList<Node<T>>();
-    }
-
-    public static class Node<T> {
-        private T score;
-        private Node<T> parent;
-        private List<Node<T>> children;
-    }
-}
 public class aiTicTacToe {
+
 	public int player; //1 for player 1 and 2 for player 2
 	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> board)
 	{
@@ -23,19 +8,18 @@ public class aiTicTacToe {
 		int index = position.x*16+position.y*4+position.z;
 		return board.get(index).state;
 	}
-
-	public getBestMove(){
-		
-	}
-
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
-
+		
 		do
 			{
-				myNextMove = getBestMove();
+				Random rand = new Random();
+				int x = rand.nextInt(4);
+				int y = rand.nextInt(4);
+				int z = rand.nextInt(4);
+				myNextMove = new positionTicTacToe(x,y,z);
 			}while(getStateOfPositionFromBoard(myNextMove,board)!=0);
 		return myNextMove;
 			
