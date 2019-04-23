@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 
 public class aiTicTacToe {
 	public int player; //1 for player 1 and 2 for player 2
+	public int opponentPlayer;
 	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> board)
 	{
 		//a helper function to get state of a certain position in the Tic-Tac-Toe board by given position TicTacToe
@@ -55,15 +56,49 @@ public class aiTicTacToe {
 		//counting the winning combinations theoretical state of the board
 		for(List<positionTicTacToe> line: winningLines){
 			boolean validPlay = true;
-			for(positionTicTacToe winningPosition: line) {
-					//increasing the winPossible count if there's a friendly piece in a winning position
-				if (getStateOfPositionFromBoard(winningPosition,boardState)!=0 && getStateOfPositionFromBoard(winningPosition,boardState)!=playerNum) {
-					validPlay = false;
+			int playValue = 0;
+			for(int i = 0;i<line.size();i++) {
+				positionTicTacToe winningPosition = line.get(i);
+				//increasing the winPossible count if there's a friendly piece in a winning position
+				if (getStateOfPositionFromBoard(winningPosition,boardState)==player) {
+					playValue+=100;
 				}
-			}
+				//checks if there's an enemy player in the winning position
+				if (getStateOfPositionFromBoard(winningPosition,boardState)!=0 && getStateOfPositionFromBoard(winningPosition,boardState)!=playerNum) {
+						validPlay = false;
+						break;
+					}
+				}
+			//increasing hueristic if friendly player has to make 1 more move to win
 			if (validPlay) {
-				heuristicValue++;
+				heuristicValue+=playValue;
 			}
+		}
+		
+		//checking the playerVal for the other player
+		for(List<positionTicTacToe> line: winningLines){
+			boolean validPlay = true;
+			int playValue = 0;
+			for(int i = 0;i<line.size();i++) {
+				positionTicTacToe winningPosition = line.get(i);
+				//increasing the winPossible count if there's a friendly piece in a winning position
+				if (getStateOfPositionFromBoard(winningPosition,boardState)==opponentPlayer) {
+					playValue+=100;
+					break;
+				}
+				
+				//checks if there's an enemy player in the winning position
+				if (getStateOfPositionFromBoard(winningPosition,boardState)!=0 && getStateOfPositionFromBoard(winningPosition,boardState)!=opponentPlayer) {
+						validPlay = false;
+						break;
+					}
+				}
+			//decrasing hueristic if enemy player has to make moves to win
+			if (validPlay) {
+				heuristicValue-=playValue;
+			}
+			
+		
 		}
 		return heuristicValue;
 	}
@@ -89,13 +124,7 @@ public class aiTicTacToe {
 					}
 				}
 			}
-			if(player == 1) {
-				makeMove(bestMove, 2, targetBoard);
-				
-			} else {
-				makeMove(bestMove,1,targetBoard);
-			}
-			
+			makeMove(bestMove,player,targetBoard);
 			return max;
 			
 		}
@@ -107,7 +136,7 @@ public class aiTicTacToe {
 				int value = 0;
 				if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 					List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(targetBoard);
-					makeMove(position, player, childBoard);
+					makeMove(position, opponentPlayer, childBoard);
 					value = miniMax(childBoard, depth-1, true);
 					if (value < min) {
 						min = value;
@@ -116,20 +145,16 @@ public class aiTicTacToe {
 				}
 			}
 			
-			if(player == 1) {
-				makeMove(bestMove, 2, targetBoard);
-				
-			} else {
-				makeMove(bestMove,1,targetBoard);
-			}
+			
+			makeMove(bestMove, opponentPlayer, targetBoard);
 			return min;
 		}
 	}
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
-		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
-
+		positionTicTacToe myNextMove = null;
+		if(player == 1) {
 				//using the minMax to get the score
 				int max = -9000;
 				List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(board);
@@ -138,13 +163,28 @@ public class aiTicTacToe {
 					if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 						List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(board);
 						makeMove(position, player, childBoard);
-						value = miniMax(childBoard, player, true);
+						value = miniMax(childBoard, 2, true);
 						if (value > max) {
 							max = value;
 							myNextMove = position;
 						}
 					}
 				}
+				
+				System.out.println(max);
+		}
+				
+				//using human input as player 2 User Input
+				if(player == 2) {
+					Scanner reader = new Scanner(System.in);  
+					System.out.println("Please enter your move in (row, col, z) format with only a space in between: ");
+					int humanMovex = reader.nextInt(); 
+					int humanMovey = reader.nextInt(); 
+					int humanMovez = reader.nextInt();
+					positionTicTacToe humanmove = new positionTicTacToe(humanMovex,humanMovey,humanMovez);
+					myNextMove = humanmove;
+				}
+		printBoardTicTacToe(board);
 		return myNextMove;
 			
 		
@@ -285,8 +325,60 @@ public class aiTicTacToe {
 		return winningLines;
 		
 	}
+	
+	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard)
+	{
+		//print each position on the board, uncomment this for debugging if necessary
+		/*
+		System.out.println("board:");
+		System.out.println("board slots: "+board.size());
+		for (int i=0;i<board.size();i++)
+		{
+			board.get(i).printPosition();
+		}
+		*/
+		
+		//print in "graphical" display
+		for (int i=0;i<4;i++)
+		{
+			System.out.println("level(z) "+i);
+			for(int j=0;j<4;j++)
+			{
+				System.out.print("["); // boundary
+				for(int k=0;k<4;k++)
+				{
+					if (getStateOfPositionFromBoard(new positionTicTacToe(j,k,i),targetBoard)==1)
+					{
+						System.out.print("X"); //print cross "X" for position marked by player 1
+					}
+					else if(getStateOfPositionFromBoard(new positionTicTacToe(j,k,i),targetBoard)==2)
+					{
+						System.out.print("O"); //print cross "O" for position marked by player 2
+					}
+					else if(getStateOfPositionFromBoard(new positionTicTacToe(j,k,i),targetBoard)==0)
+					{
+						System.out.print("_"); //print "_" if the position is not marked
+					}
+					if(k==3)
+					{
+						System.out.print("]"); // boundary
+						System.out.println();
+					}
+					
+					
+				}
+
+			}
+			System.out.println();
+		}
+	}
 	public aiTicTacToe(int setPlayer)
 	{
 		player = setPlayer;
+		if (player==1) {
+			opponentPlayer = 2;
+		} else if (player==2) {
+			opponentPlayer = 1;
+		}
 	}
 }
