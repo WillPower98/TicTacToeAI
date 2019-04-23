@@ -72,8 +72,9 @@ public class aiTicTacToe {
 		if(depth == 0){
 			return getHeuristic(targetBoard, player);
 		}
-		if(maxPlayer == true){
+		if(maxPlayer){
 			int max = -9000;
+			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
 			//adding onto the rootNode all possible moves by both players
 			for(positionTicTacToe position: deepCopy){
@@ -81,31 +82,47 @@ public class aiTicTacToe {
 				if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 					List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(targetBoard);
 					makeMove(position, player, childBoard);
-					value = miniMax(childBoard, depth-1,true);
+					value = miniMax(childBoard, depth-1, false);
 					if (value > max) {
 						max = value;
+						bestMove = position;
 					}
 				}
 			}
+			if(player == 1) {
+				makeMove(bestMove, 2, targetBoard);
+				
+			} else {
+				makeMove(bestMove,1,targetBoard);
+			}
+			
 			return max;
+			
 		}
 		else {
-			int max = 9000;
+			int min = 9000;
+			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
-			
 			for(positionTicTacToe position: deepCopy){
 				int value = 0;
 				if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 					List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(targetBoard);
 					makeMove(position, player, childBoard);
-					value = miniMax(childBoard, depth-1,true);
-					if (value > max) {
-						max = value;
+					value = miniMax(childBoard, depth-1, true);
+					if (value < min) {
+						min = value;
+						bestMove = position;
 					}
 				}
 			}
 			
-			return max;
+			if(player == 1) {
+				makeMove(bestMove, 2, targetBoard);
+				
+			} else {
+				makeMove(bestMove,1,targetBoard);
+			}
+			return min;
 		}
 	}
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
@@ -113,38 +130,21 @@ public class aiTicTacToe {
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
 
-		do
-			{
-				//preparing to record all possible moves for the tree
-				Tree<T> rootNode = new Tree<T>(board);
-				rootNode.children = children;
-				List<Node> children = new List<positionTicTacToe>();
-				List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(List<positionTicTacToe> board);
-
-				//adding onto the rootNode all possible moves by both players
-				for(positionTicTacToe position: deepCopy){
-					if(getStateOfPositionFromBoard(position, deepCopy) == 0){
-						List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(List<positionTicTacToe> board);
-						makeMove(position, player, childBoard);
-						Node childNode;
-						childNode.boardState = childBoard;
-						children.add(childNode);
-					}
-
-				}
-
-				//getting the heuristic values of all the minimax
-				List<Integer> scores = new List<Integer>();
-				for(Node winCombo: children){
-					int score = getHeuristic(winCombo, player);
-				}
-				
-
 				//using the minMax to get the score
-				myNextMove = miniMax(board, 2, player);
-
-				myNextMove = new positionTicTacToe(x,y,z);
-			}while(getStateOfPositionFromBoard(myNextMove,board)!=0);
+				int max = -9000;
+				List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(board);
+				for(positionTicTacToe position: board){
+					int value = 0;
+					if(getStateOfPositionFromBoard(position, deepCopy) == 0){
+						List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(board);
+						makeMove(position, player, childBoard);
+						value = miniMax(childBoard, player, true);
+						if (value > max) {
+							max = value;
+							myNextMove = position;
+						}
+					}
+				}
 		return myNextMove;
 			
 		
