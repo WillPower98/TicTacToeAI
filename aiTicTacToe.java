@@ -49,66 +49,72 @@ public class aiTicTacToe {
 		return false;
 	}
 
-	public int getHeuristic(List<positionTicTacToe> targetBoard, int playerNum) {
+	public int getHeuristic(List<positionTicTacToe> targetBoard, int playerNum, int opponentNum) {
 		List<List<positionTicTacToe>> winningLines = initializeWinningLines();
 		List <positionTicTacToe> boardState = targetBoard;
 		int heuristicValue = 0;
 		//counting the winning combinations theoretical state of the board
 		for(List<positionTicTacToe> line: winningLines){
-			boolean validPlay = true;
-			int playValue = 0;
+			int countPieces = 0;
+			int emptyCells = 0;
 			for(int i = 0;i<line.size();i++) {
 				positionTicTacToe winningPosition = line.get(i);
 				//increasing the winPossible count if there's a friendly piece in a winning position
-				if (getStateOfPositionFromBoard(winningPosition,boardState)==player) {
-					playValue+=100;
+				if (getStateOfPositionFromBoard(winningPosition,boardState)==playerNum) {
+					countPieces++;
+				} else if (getStateOfPositionFromBoard(winningPosition,boardState)==0) {
+					emptyCells++;
 				}
-				//checks if there's an enemy player in the winning position
-				if (getStateOfPositionFromBoard(winningPosition,boardState)!=0 && getStateOfPositionFromBoard(winningPosition,boardState)!=playerNum) {
-						validPlay = false;
-						break;
-					}
-				}
-			//increasing hueristic if friendly player has to make 1 more move to win
-			if (validPlay) {
-				heuristicValue+=playValue;
+
+			}
+			if (countPieces==4) {
+				heuristicValue+=1000;	
+			} else if (countPieces==3 && emptyCells==1) {
+				heuristicValue+=100;
+			} else if (countPieces==2 && emptyCells==2) {
+				heuristicValue+=10;
+			} else if (countPieces==1 && emptyCells==3) {
+				heuristicValue+=1;
 			}
 		}
 		
 		//checking the playerVal for the other player
 		for(List<positionTicTacToe> line: winningLines){
-			boolean validPlay = true;
-			int playValue = 0;
+			int countPieces = 0;
+			int emptyCells = 0;
 			for(int i = 0;i<line.size();i++) {
 				positionTicTacToe winningPosition = line.get(i);
 				//increasing the winPossible count if there's a friendly piece in a winning position
-				if (getStateOfPositionFromBoard(winningPosition,boardState)==opponentPlayer) {
-					playValue+=100;
-					break;
+				if (getStateOfPositionFromBoard(winningPosition,boardState)==opponentNum) {
+					countPieces+=1;
+				} else if (getStateOfPositionFromBoard(winningPosition,boardState)==0) {
+					emptyCells++;
 				}
-				
-				//checks if there's an enemy player in the winning position
-				if (getStateOfPositionFromBoard(winningPosition,boardState)!=0 && getStateOfPositionFromBoard(winningPosition,boardState)!=opponentPlayer) {
-						validPlay = false;
-						break;
-					}
-				}
-			//decrasing hueristic if enemy player has to make moves to win
-			if (validPlay) {
-				heuristicValue-=playValue;
 			}
 			
-		
+			//decrasing hueristic if enemy player has to make moves to win
+			if (countPieces==4) {
+				heuristicValue-=1000;	
+			} else if (countPieces==3 && emptyCells==1) {
+				heuristicValue-=100;
+			} else if (countPieces==2 && emptyCells==2) {
+				heuristicValue-=10;
+			} else if (countPieces==1 && emptyCells==3) {
+				heuristicValue-=1;
+			}
 		}
+			
+		
+		
 		return heuristicValue;
 	}
 
 	public int miniMax(List<positionTicTacToe> targetBoard, int depth, boolean maxPlayer){
 		if(depth == 0){
-			return getHeuristic(targetBoard, player);
+			return getHeuristic(targetBoard, player, opponentPlayer);
 		}
 		if(maxPlayer){
-			int max = -9000;
+			int max = -9000000;
 			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
 			//adding onto the rootNode all possible moves by both players
@@ -129,7 +135,7 @@ public class aiTicTacToe {
 			
 		}
 		else {
-			int min = 9000;
+			int min = 9000000;
 			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
 			for(positionTicTacToe position: deepCopy){
@@ -184,7 +190,6 @@ public class aiTicTacToe {
 					positionTicTacToe humanmove = new positionTicTacToe(humanMovex,humanMovey,humanMovez);
 					myNextMove = humanmove;
 				}
-		printBoardTicTacToe(board);
 		return myNextMove;
 			
 		

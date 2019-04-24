@@ -320,10 +320,11 @@ public class runTicTacToe {
 	{
 
 		Random rand = new Random();
-		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
+		int turn = rand.nextInt(2)+1; //1 = player1  turn, 2 = player2's turn, who go first is randomized 
 		
 		while((result = isEnded())==0) //game loop
 		{
+			printBoardTicTacToe(board);
 			if(turn==1)
 			{
 				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1); //1 stands for player 1
@@ -342,7 +343,6 @@ public class runTicTacToe {
 				System.out.println("Error!");
 			}
 		}
-		
 			//game is ended
 		if(result==1)
 		{
