@@ -1,7 +1,6 @@
 import java.util.*;
 
 import org.w3c.dom.Node;
-
 public class aiTicTacToe {
 	public int player; //1 for player 1 and 2 for player 2
 	public int opponentPlayer;
@@ -109,12 +108,11 @@ public class aiTicTacToe {
 		return heuristicValue;
 	}
 
-	public int miniMax(List<positionTicTacToe> targetBoard, int depth, boolean maxPlayer){
+	public int miniMax(List<positionTicTacToe> targetBoard, int depth, boolean maxPlayer, int alpha, int beta){
 		if(depth == 0){
 			return getHeuristic(targetBoard, player, opponentPlayer);
 		}
 		if(maxPlayer){
-			int max = -9000000;
 			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
 			//adding onto the rootNode all possible moves by both players
@@ -123,19 +121,30 @@ public class aiTicTacToe {
 				if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 					List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(targetBoard);
 					makeMove(position, player, childBoard);
-					value = miniMax(childBoard, depth-1, false);
-					if (value > max) {
-						max = value;
+					value = miniMax(childBoard, depth-1, false, alpha, beta);
+					if (value == alpha) {
+						if(Math.random()<0.5) {
+							alpha = value;
+							bestMove = position;
+						}
+						else {
+							break;
+						}
+					}
+					else if (value > alpha) {
+						alpha = value;
 						bestMove = position;
+					}
+					if(alpha>beta) {
+						break;
 					}
 				}
 			}
 			makeMove(bestMove,player,targetBoard);
-			return max;
+			return alpha;
 			
 		}
 		else {
-			int min = 9000000;
 			positionTicTacToe bestMove = null;
 			List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(targetBoard);
 			for(positionTicTacToe position: deepCopy){
@@ -143,33 +152,36 @@ public class aiTicTacToe {
 				if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 					List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(targetBoard);
 					makeMove(position, opponentPlayer, childBoard);
-					value = miniMax(childBoard, depth-1, true);
-					if (value < min) {
-						min = value;
+					value = miniMax(childBoard, depth-1, true, alpha, beta);
+					if (value < beta) {
+						beta = value;
 						bestMove = position;
+					}
+					if(alpha>=beta) {
+						break;
 					}
 				}
 			}
 			
 			
 			makeMove(bestMove, opponentPlayer, targetBoard);
-			return min;
+			return beta;
 		}
 	}
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = null;
-		if(player == 1) {
+		//if(player == 1) {
 				//using the minMax to get the score
-				int max = -9000;
+				int max = Integer.MIN_VALUE;
 				List<positionTicTacToe> deepCopy = deepCopyATicTacToeBoard(board);
 				for(positionTicTacToe position: board){
 					int value = 0;
 					if(getStateOfPositionFromBoard(position, deepCopy) == 0){
 						List<positionTicTacToe> childBoard = deepCopyATicTacToeBoard(board);
 						makeMove(position, player, childBoard);
-						value = miniMax(childBoard, 2, true);
+						value = miniMax(childBoard, 2, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
 						if (value > max) {
 							max = value;
 							myNextMove = position;
@@ -177,19 +189,18 @@ public class aiTicTacToe {
 					}
 				}
 				
-				System.out.println(max);
-		}
+	//	}
 				
 				//using human input as player 2 User Input
-				if(player == 2) {
-					Scanner reader = new Scanner(System.in);  
-					System.out.println("Please enter your move in (row, col, z) format with only a space in between: ");
-					int humanMovex = reader.nextInt(); 
-					int humanMovey = reader.nextInt(); 
-					int humanMovez = reader.nextInt();
-					positionTicTacToe humanmove = new positionTicTacToe(humanMovex,humanMovey,humanMovez);
-					myNextMove = humanmove;
-				}
+//				if(player == 2) {
+//					Scanner reader = new Scanner(System.in);  
+//					System.out.println("Please enter your move in (row, col, z) format with only a space in between: ");
+//					int humanMovex = reader.nextInt(); 
+//					int humanMovey = reader.nextInt(); 
+//					int humanMovez = reader.nextInt();
+//					positionTicTacToe humanmove = new positionTicTacToe(humanMovex,humanMovey,humanMovez);
+//					myNextMove = humanmove;
+//				}
 		return myNextMove;
 			
 		
